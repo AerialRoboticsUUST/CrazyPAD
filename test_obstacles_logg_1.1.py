@@ -1,37 +1,8 @@
 # -*- coding: utf-8 -*-
 #
-#     ||          ____  _ __
-#  +------+      / __ )(_) /_______________ _____  ___
-#  | 0xBC |     / __  / / __/ ___/ ___/ __ `/_  / / _ \
-#  +------+    / /_/ / / /_/ /__/ /  / /_/ / / /_/  __/
-#   ||  ||    /_____/_/\__/\___/_/   \__,_/ /___/\___/
-#
-#  Copyright (C) 2018 Bitcraze AB
-#
-#  This program is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU General Public License
-#  as published by the Free Software Foundation; either version 2
-#  of the License, or (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <https://www.gnu.org/licenses/>.
-"""
-The PositionHlCommander is used to make it easy to write scripts that moves the
-Crazyflie around. Some sort of positioning support is required, for
-instance the Loco Positioning System. The implementation uses the High Level
-Commander and position setpoints.
+# Based on bitcraze example project:
+# https://github.com/bitcraze/crazyflie-lib-python/blob/master/examples/step-by-step/sbs_motion_commander.py
 
-The API contains a set of primitives that are easy to understand and use, such
-as "go forward" or "turn around".
-
-The PositionHlCommander can be used as context manager using the with keyword.
-In this mode of operation takeoff and landing is executed when the context is
-created/closed.
-"""
 import logging
 import sys
 import time
