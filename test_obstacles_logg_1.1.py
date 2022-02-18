@@ -87,9 +87,7 @@ def move_linear_simple(scf):
             time.sleep(2)
             mc.forward(0.05, velocity=0.3)
             keep_flying = True
-            #while keep_flying:
-                # VELOCITY = 0.3
-                # velocity_x = 0.1
+            
             a=1
             while (a<30) and keep_flying:
                 mc.forward(0.05, velocity=0.3)
