@@ -6,6 +6,8 @@
 import logging
 import time
 
+import csv
+
 import matplotlib.pyplot as plt
 
 import cflib.crtp
@@ -20,16 +22,30 @@ uri = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E7E7')
 
 logging.basicConfig(level=logging.ERROR)
 
-position_estimate = [0, 0]
+csvfile=open('position.csv', 'w')
+fieldnames = ['timestamp', 'stateEstimate.x', 'stateEstimate.y', 'stateEstimate.z']
+position_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+position_writer.writeheader()
+
+csvfile1=open('motor.csv', 'w')
+fieldnames = ['timestamp', 'motor.m1', 'motor.m2', 'motor.m3', 'motor.m4']
+motor_writer = csv.DictWriter(csvfile1, fieldnames=fieldnames)
+
+motor_writer.writeheader()
 
 def log_stab_callback(timestamp, data, logconf):
     print('[%d][%s]: %s' % (timestamp, logconf.name, data))
 
 def log_pos_callback(timestamp, data, logconf):
+    data['timestamp']=timestamp
     print(data)
-    global position_estimate
-    position_estimate[0] = data['stateEstimate.x']
-    position_estimate[1] = data['stateEstimate.y']
+    position_writer.writerow(data)
+
+def log_motor_callback(timestamp, data, logconf):
+    data['timestamp']=timestamp
+    motor_writer.writerow(data)
+    print(data)   
 
 if __name__ == '__main__':
     cflib.crtp.init_drivers()
@@ -40,6 +56,7 @@ if __name__ == '__main__':
         logconf = LogConfig(name='Position', period_in_ms=100)
         logconf.add_variable('stateEstimate.x', 'float')
         logconf.add_variable('stateEstimate.y', 'float')
+        logconf.add_variable('stateEstimate.z', 'float')
         scf.cf.log.add_config(logconf)
         logconf.data_received_cb.add_callback(log_pos_callback)
         logconf.start()
@@ -52,6 +69,15 @@ if __name__ == '__main__':
         lg_stab.data_received_cb.add_callback(log_stab_callback)
         lg_stab.start()
 
+        lg_motor = LogConfig(name='motor', period_in_ms=100)
+        lg_motor.add_variable('motor.m1', 'uint32_t')
+        lg_motor.add_variable('motor.m2', 'uint32_t')
+        lg_motor.add_variable('motor.m3', 'uint32_t')
+        lg_motor.add_variable('motor.m4', 'uint32_t')
+        scf.cf.log.add_config(lg_motor)
+        lg_motor.data_received_cb.add_callback(log_motor_callback)
+        lg_motor.start()
+
         with PositionHlCommander(scf, default_height=0.5, controller=PositionHlCommander.CONTROLLER_PID) as pc:
             pc.go_to( x=0.0, y=0.0, velocity=0.3)
             pc.go_to( x=1.5, y=0.0, velocity=0.3)
@@ -61,3 +87,5 @@ if __name__ == '__main__':
             pc.go_to( x=0.0, y=0.0, velocity=0.3)
             pc.land()
 
+    csvfile.close()
+    csvfile1.close()
