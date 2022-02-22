@@ -18,60 +18,39 @@ from cflib.positioning.motion_commander import MotionCommander
 from cflib.utils import uri_helper
 from cflib.utils.multiranger import Multiranger
 from cflib.crazyflie.log import LogConfig
-from cflib.crazyflie.syncLogger import SyncLogger
 
 URI = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E7E7')
 
-def simple_log(scf, logconf):
-    with SyncLogger(scf, lg_stab) as logger:
+csvfile=open('motion_o.csv', 'w')
+fieldnames = ['timestamp', 'stateEstimate.x', 'stateEstimate.y', 'stateEstimate.z']
+motion_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-        for log_entry in logger:
+motion_writer.writeheader()
 
-            timestamp = log_entry[0]
-            data = log_entry[1]
-            logconf_name = log_entry[2]
+csvfile1=open('motor_o.csv', 'w')
+fieldnames = ['timestamp', 'motor.m1', 'motor.m2', 'motor.m3', 'motor.m4']
+motor_writer = csv.DictWriter(csvfile1, fieldnames=fieldnames)
 
-            print('[%d][%s]: %s' % (timestamp, logconf_name, data))
+motor_writer.writeheader()
 
-            break
 
+def log_stab_callback(timestamp, data, logconf):
+    print('[%d][%s]: %s' % (timestamp, logconf.name, data))
+
+def log_pos_callback(timestamp, data, logconf):
+    data['timestamp']=timestamp
+    print(data)
+    position_writer.writerow(data)
+
+def log_motor_callback(timestamp, data, logconf):
+    data['timestamp']=timestamp
+    motor_writer.writerow(data)
+    print(data)
+    
 DEFAULT_HEIGHT = 0.2
 
 deck_attached_event = Event()
-logging.basicConfig(level=logging.ERROR)
-
-position_estimate = [0, 0]
-
-def log_stab_callback(timestamp, data, logconf):
-    print(data)
-    global position_estimate
-    position_estimate[0] = data['stateEstimate.x']
-    position_estimate[1] = data['stateEstimate.y']
-
-def simple_log_async(scf, logconf):
-    cf = scf.cf
-    cf.log.add_config(logconf)
-    logconf.data_received_cb.add_callback(log_stab_callback)
-    logconf.start()
-    time.sleep(5)
-    logconf.stop()
-    
-     # Callback called when the connection is established to the Crazyflie
-def connected(link_uri):
-    crazyflie.log.add_config(logconf)
-
-    if logconf.valid:
-       logconf.data_received_cb.add_callback(data_received_callback)
-       logconf.error_cb.add_callback(logging_error)
-       logconf.start()
-    else:
-       print ("One or more of the variables in the configuration was not found in log TOC. No logging will be possible.")
-
-def data_received_callback(timestamp, data, logconf):
-       print ('[%d][%s]: %s' % (timestamp, logconf.name, data))
-
-def logging_error(logconf, msg):
-       print ('Error when logging %s' % logconf.name)
+logging.basicConfig(level=logging.ERROR)    
        
 def is_close(range):
     MIN_DISTANCE = 0.3  # m
@@ -138,31 +117,6 @@ def move_linear_simple(scf):
             a=a+1
   
 
-def move_box_limit(scf):
-    with MotionCommander(scf, default_height=DEFAULT_HEIGHT) as mc:
-        body_x_cmd = 0.2
-        body_y_cmd = 0.1
-        max_vel = 0.2
-
-        while (1):
-            '''if position_estimate[0] > BOX_LIMIT:
-                mc.start_back()
-            elif position_estimate[0] < -BOX_LIMIT:
-                mc.start_forward()
-            '''
-
-            if position_estimate[0] > BOX_LIMIT:
-                body_x_cmd = -max_vel
-            elif position_estimate[0] < -BOX_LIMIT:
-                body_x_cmd = max_vel
-            if position_estimate[1] > BOX_LIMIT:
-                body_y_cmd = -max_vel
-            elif position_estimate[1] < -BOX_LIMIT:
-                body_y_cmd = max_vel
-
-            mc.start_linear_motion(body_x_cmd, body_y_cmd, 0)
-
-            time.sleep(0.1)
 def take_off_simple(scf):
     ...
     
@@ -187,30 +141,35 @@ def param_deck_flow(name, value_str):
 if __name__ == '__main__':
     cflib.crtp.init_drivers()
     
-    with SyncCrazyflie(URI, cf=Crazyflie(rw_cache='./cache')) as scf:      
-        scf.cf.param.add_update_callback(group='deck', name='bcFlow2',
-                                         cb=param_deck_flow)
-        time.sleep(1)
-
-        logconf = LogConfig(name='Position', period_in_ms=500)
+    cf = Crazyflie(rw_cache='./cache')
+    
+    with SyncCrazyflie(uri, cf=cf) as scf:
+        logconf = LogConfig(name='Position', period_in_ms=100)
         logconf.add_variable('stateEstimate.x', 'float')
         logconf.add_variable('stateEstimate.y', 'float')
         logconf.add_variable('stateEstimate.z', 'float')
-        logconf.add_variable('stabilizer.roll', 'float')
-        logconf.add_variable('stabilizer.pitch', 'float')
-        logconf.add_variable('stabilizer.yaw', 'float')
         scf.cf.log.add_config(logconf)
         logconf.data_received_cb.add_callback(log_pos_callback)
         logconf.start()
-        
-        with open('names1.csv', 'w') as csvfile:
-            fieldnames = ['x', 'y', 'z']
-            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
 
-            writer.writeheader()
-            writer.writerow({'x': 'stateEstimate.x', 'y': 'stateEstimate.y', 'z': 'stateEstimate.z'})
-            print("Writing complete")    
+        lg_stab = LogConfig(name='Stabilizer', period_in_ms=100)
+        lg_stab.add_variable('stabilizer.roll', 'float')
+        lg_stab.add_variable('stabilizer.pitch', 'float')
+        lg_stab.add_variable('stabilizer.yaw', 'float')
+        scf.cf.log.add_config(lg_stab)
+        lg_stab.data_received_cb.add_callback(log_stab_callback)
+        lg_stab.start()
+
+        lg_motor = LogConfig(name='motor', period_in_ms=100)
+        lg_motor.add_variable('motor.m1', 'uint32_t')
+        lg_motor.add_variable('motor.m2', 'uint32_t')
+        lg_motor.add_variable('motor.m3', 'uint32_t')
+        lg_motor.add_variable('motor.m4', 'uint32_t')
+        scf.cf.log.add_config(lg_motor)
+        lg_motor.data_received_cb.add_callback(log_motor_callback)
+        lg_motor.start()
         
+
         take_off_simple(scf)
         move_linear_simple(scf)
         logconf.stop()
@@ -219,3 +178,5 @@ if __name__ == '__main__':
        
 
         move_linear_simple(scf)
+        csvfile.close()
+        csvfile1.close()
