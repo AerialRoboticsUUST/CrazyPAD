@@ -61,11 +61,130 @@ class FileLogger(object):
 def init_loggers():
     loggers = []
 
+    logconf = LogConfig(name='Acc', period_in_ms=100)
+    logvars = [
+        LogVaraible('acc.x', 'float'),
+        LogVaraible('acc.y', 'float'),
+        LogVaraible('acc.z', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'acc.csv', logvars))
+
+    logconf = LogConfig(name='ActiveMarket', period_in_ms=100)
+    logvars = [
+        LogVaraible('activeMarket.btSns', 'uint8_t'),
+        LogVaraible('activeMarket.i2cOk', 'uint8_t'),
+    ]
+    loggers.append(FileLogger(logconf, 'activeMarket.csv', logvars))
+
+    logconf = LogConfig(name='Baro', period_in_ms=100)
+    logvars = [
+        LogVaraible('baro.pressure', 'float'),
+        LogVaraible('baro.asl', 'float'),
+        LogVaraible('baro.temp', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'baro.csv', logvars))
+
+    logconf = LogConfig(name='Controller1', period_in_ms=100)
+    logvars = [
+        LogVaraible('controller.accelz', 'float'),
+        LogVaraible('controller.actuatorThrust', 'float'),
+        LogVaraible('controller.cmd_pitch', 'float'),
+        LogVaraible('controller.cmd_roll', 'float'),
+        LogVaraible('controller.cmd_thrust', 'float'),
+        LogVaraible('controller.cmd_yaw', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'controller1.csv', logvars))
+
+    logconf = LogConfig(name='Controller2', period_in_ms=100)
+    logvars = [
+        LogVaraible('controller.ctr_yaw', 'int16_t'),
+        LogVaraible('controller.pitch', 'float'),
+        LogVaraible('controller.pitchRate', 'float'),
+        LogVaraible('controller.r_pitch', 'float'),
+        LogVaraible('controller.r_roll', 'float'),
+        LogVaraible('controller.r_yaw', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'controller2.csv', logvars))
+
+    logconf = LogConfig(name='Controller3', period_in_ms=100)
+    logvars = [
+        LogVaraible('controller.roll', 'int16_t'),
+        LogVaraible('controller.rollRate', 'float'),
+        LogVaraible('controller.yaw', 'float'),
+        LogVaraible('controller.yawRate', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'controller3.csv', logvars))
+
+    logconf = LogConfig(name='ctrltarget1', period_in_ms=100)
+    logvars = [
+        LogVaraible('ctrltarget.x', 'float'),
+        LogVaraible('ctrltarget.y', 'float'),
+        LogVaraible('ctrltarget.z', 'float'),
+        LogVaraible('ctrltarget.vx', 'float'),
+        LogVaraible('ctrltarget.vx', 'float'),
+        LogVaraible('ctrltarget.vx', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'ctrltarget1.csv', logvars))
+
+    logconf = LogConfig(name='ctrltarget2', period_in_ms=100)
+    logvars = [
+        LogVaraible('ctrltarget.ax', 'float'),
+        LogVaraible('ctrltarget.ay', 'float'),
+        LogVaraible('ctrltarget.az', 'float'),
+        LogVaraible('ctrltarget.roll', 'float'),
+        LogVaraible('ctrltarget.pitch', 'float'),
+        LogVaraible('ctrltarget.yaw', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'ctrltarget2.csv', logvars))
+
+    logconf = LogConfig(name='ctrltargetZ1', period_in_ms=100)
+    logvars = [
+        LogVaraible('ctrltargetZ.x', 'int16_t'),
+        LogVaraible('ctrltargetZ.y', 'int16_t'),
+        LogVaraible('ctrltargetZ.z', 'int16_t'),
+        LogVaraible('ctrltargetZ.vx', 'int16_t'),
+        LogVaraible('ctrltargetZ.vy', 'int16_t'),
+        LogVaraible('ctrltargetZ.vz', 'int16_t'),
+    ]
+    loggers.append(FileLogger(logconf, 'ctrltargetZ1.csv', logvars))
+
+    logconf = LogConfig(name='ctrltargetZ2', period_in_ms=100)
+    logvars = [
+        LogVaraible('ctrltargetZ.ax', 'int16_t'),
+        LogVaraible('ctrltargetZ.ay', 'int16_t'),
+        LogVaraible('ctrltargetZ.az', 'int16_t'),
+    ]
+    loggers.append(FileLogger(logconf, 'ctrltargetZ2.csv', logvars))
+
+    logconf = LogConfig(name='extrx', period_in_ms=100)
+    logvars = [
+        LogVaraible('extrx.AltHold', 'uint8_t'),
+        LogVaraible('extrx.Arm', 'uint8_t'),
+        LogVaraible('extrx.thrust', 'float'),
+        LogVaraible('extrx.roll', 'float'),
+        LogVaraible('extrx.pitch', 'float'),
+        LogVaraible('extrx.yawRate', 'float'),
+        LogVaraible('extrx.zVel', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'extrx.csv', logvars))
+
+    logconf = LogConfig(name='extrx_raw', period_in_ms=100)
+    logvars = [
+        LogVaraible('extrx_raw.ch0', 'uint16_t'),
+        LogVaraible('extrx.Arm', 'uint8_t'),
+        LogVaraible('extrx.thrust', 'float'),
+        LogVaraible('extrx.roll', 'float'),
+        LogVaraible('extrx.pitch', 'float'),
+        LogVaraible('extrx.yawRate', 'float'),
+        LogVaraible('extrx.zVel', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'extrx_raw.csv', logvars))
+    
     logconf = LogConfig(name='Position', period_in_ms=100)
     logvars = [
         LogVaraible('stateEstimate.x', 'float'),
-        LogVaraible('stateEstimate.x', 'float'),
-        LogVaraible('stateEstimate.x', 'float'),
+        LogVaraible('stateEstimate.y', 'float'),
+        LogVaraible('stateEstimate.z', 'float'),
     ]
     loggers.append(FileLogger(logconf, 'position.csv', logvars))
 
