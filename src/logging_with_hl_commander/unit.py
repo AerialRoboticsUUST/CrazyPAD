@@ -26,6 +26,9 @@ logging.basicConfig(level=logging.ERROR)
 csvfile=open('position.csv', 'w')
 csvfile1=open('stabilizer.csv', 'w')
 csvfile2=open('motor.csv', 'w')
+csvfile3=open('acc.csv', 'w')
+csvfile4=open('range.csv', 'w')
+csvfile5=open('target.csv', 'w')
 
 def pos():
     fieldnames = ['timestamp', 'stateEstimate.x', 'stateEstimate.y', 'stateEstimate.z']
@@ -37,7 +40,6 @@ def pos():
         print(data)
         position_writer.writerow(data)
 
-        x='stateEstimate.x'
 
     logconf = LogConfig(name='Position', period_in_ms=100)
     logconf.add_variable('stateEstimate.x', 'float')
@@ -83,7 +85,62 @@ def mot():
     scf.cf.log.add_config(lg_motor)
     lg_motor.data_received_cb.add_callback(log_motor_callback)
     lg_motor.start()
-  
+
+def acc():
+    fieldnames = ['timestamp', 'acc.x', 'acc.y', 'acc.z']
+    acc_writer = csv.DictWriter(csvfile3, fieldnames=fieldnames)
+    acc_writer.writeheader()
+
+    def log_acc_callback(timestamp, data, logconf):
+        data['timestamp']=timestamp
+        print(data)
+        acc_writer.writerow(data)
+
+    lg_acc = LogConfig(name='acc', period_in_ms=100)
+    lg_acc.add_variable('acc.x', 'float')
+    lg_acc.add_variable('acc.y', 'float')
+    lg_acc.add_variable('acc.z', 'float')
+    scf.cf.log.add_config(lg_acc)
+    lg_acc.data_received_cb.add_callback(log_acc_callback)
+    lg_acc.start()
+
+def range():
+    fieldnames = ['timestamp', 'range.zrange',]
+    range_writer = csv.DictWriter(csvfile4, fieldnames=fieldnames)
+    range_writer.writeheader()
+
+    def log_range_callback(timestamp, data, logconf):
+        data['timestamp']=timestamp
+        print(data)
+        range_writer.writerow(data)
+
+    lg_range = LogConfig(name='range', period_in_ms=100)
+    lg_range.add_variable('range.zrange', 'float')
+    scf.cf.log.add_config(lg_range)
+    lg_range.data_received_cb.add_callback(log_range_callback)
+    lg_range.start()   
+
+def target():
+    fieldnames = ['timestamp', 'ctrltarget.ax', 'ctrltarget.ay', 'ctrltarget.az', 'ctrltarget.vx', 'ctrltarget.vy', 'ctrltarget.vz']
+    target_writer = csv.DictWriter(csvfile5, fieldnames=fieldnames)
+    target_writer.writeheader()
+
+    def log_target_callback(timestamp, data, logconf):
+        data['timestamp']=timestamp
+        print(data)
+        target_writer.writerow(data)
+
+    lg_target = LogConfig(name='target', period_in_ms=100)
+    lg_target.add_variable('ctrltarget.ax', 'float')
+    lg_target.add_variable('ctrltarget.ay', 'float')
+    lg_target.add_variable('ctrltarget.az', 'float')
+    lg_target.add_variable('ctrltarget.vx', 'float')
+    lg_target.add_variable('ctrltarget.vy', 'float')
+    lg_target.add_variable('ctrltarget.vz', 'float')
+    scf.cf.log.add_config(lg_target)
+    lg_target.data_received_cb.add_callback(log_target_callback)
+    lg_target.start()
+
 if __name__ == '__main__':
     cflib.crtp.init_drivers()
 
@@ -94,6 +151,9 @@ if __name__ == '__main__':
         pos()
         stab()
         mot()
+        acc()
+        range()
+        target()
 
         with PositionHlCommander(scf, default_height=0.5, controller=PositionHlCommander.CONTROLLER_PID) as pc:
             pc.go_to( x=0.0, y=0.0, velocity=0.3)
@@ -107,3 +167,6 @@ if __name__ == '__main__':
     csvfile.close()
     csvfile1.close()
     csvfile2.close()
+    csvfile3.close()
+    csvfile4.close()
+    csvfile5.close()
