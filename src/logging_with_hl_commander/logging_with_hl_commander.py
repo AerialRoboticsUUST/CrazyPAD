@@ -3,6 +3,7 @@
 # Based on bitcraze example project:
 # https://github.com/bitcraze/crazyflie-lib-python/blob/master/examples/step-by-step/sbs_motion_commander.py
 
+from fileinput import filename
 import logging
 import time
 
@@ -22,61 +23,88 @@ uri = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E7E7')
 
 logging.basicConfig(level=logging.ERROR)
 
-csvfile=open('position.csv', 'w')
-fieldnames = ['timestamp', 'stateEstimate.x', 'stateEstimate.y', 'stateEstimate.z']
-position_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+# Log variables
+class LogVaraible():
+    def __init__(self, name, type):
+        self.name = name
+        self.type = type
 
-position_writer.writeheader()
+# File logger
+class FileLogger(object):
+    def __init__(self, logConf, fileName, logVariables):
+        self._logConf = logConf
 
-csvfile1=open('motor.csv', 'w')
-fieldnames = ['timestamp', 'motor.m1', 'motor.m2', 'motor.m3', 'motor.m4']
-motor_writer = csv.DictWriter(csvfile1, fieldnames=fieldnames)
+        fieldnames = ['timestamp']
+        for logVar in logVariables:
+            self._logConf.add_variable(logVar.name, logVar.type)
+            fieldnames.append(logVar.Name)
 
-motor_writer.writeheader()
+        
+        self._csvfile = open(fileName, 'w')
+        self._data_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        self._data_writer.writeheader()
 
-def log_stab_callback(timestamp, data, logconf):
-    print('[%d][%s]: %s' % (timestamp, logconf.name, data))
+        def log_callback(timestamp, data):
+            data['timestamp']=timestamp
+            self._data_writer.writerow(data)
+            print(data)
+            
+        self._logConf.data_received_cb.add_callback(log_callback)
 
-def log_pos_callback(timestamp, data, logconf):
-    data['timestamp']=timestamp
-    print(data)
-    position_writer.writerow(data)
+    def start(self, crazyflie):
+        crazyflie.log.add_config(self._logConf)
+        self._logConf.start()
 
-def log_motor_callback(timestamp, data, logconf):
-    data['timestamp']=timestamp
-    motor_writer.writerow(data)
-    print(data)   
+    def stop(self):
+        self._logConf.stop()
+        self._csvfile.close()    
 
-if __name__ == '__main__':
+def init_loggers():
+    loggers = []
+
+    logconf = LogConfig(name='Position', period_in_ms=100)
+    logvars = [
+        LogVaraible('stateEstimate.x', 'float'),
+        LogVaraible('stateEstimate.x', 'float'),
+        LogVaraible('stateEstimate.x', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'position.csv', logvars))
+
+    logconf = LogConfig(name='Stabilizer', period_in_ms=100)
+    logvars = [
+        LogVaraible('stabilizer.roll', 'float'),
+        LogVaraible('stabilizer.pitch', 'float'),
+        LogVaraible('stabilizer.yaw', 'float'),
+    ]
+    loggers.append(FileLogger(logconf, 'stabilizer.csv', logvars))
+
+    logconf = LogConfig(name='Motor', period_in_ms=100)
+    logvars = [
+        LogVaraible('motor.m1', 'uint32_t'),
+        LogVaraible('motor.m2', 'uint32_t'),
+        LogVaraible('motor.m3', 'uint32_t'),
+        LogVaraible('motor.m4', 'uint32_t'),
+    ]
+    loggers.append(FileLogger(logconf, 'motor.csv', logvars))
+
+    return loggers
+
+def start_logging(cf, loggers):
+    for logger in loggers:
+        logger.start(cf)    
+
+def stop_logging(loggers):
+    for logger in loggers:
+        logger.stop() 
+
+if __name__ == '__main__'
     cflib.crtp.init_drivers()
 
     cf = Crazyflie(rw_cache='./cache')
     
     with SyncCrazyflie(uri, cf=cf) as scf:
-        logconf = LogConfig(name='Position', period_in_ms=100)
-        logconf.add_variable('stateEstimate.x', 'float')
-        logconf.add_variable('stateEstimate.y', 'float')
-        logconf.add_variable('stateEstimate.z', 'float')
-        scf.cf.log.add_config(logconf)
-        logconf.data_received_cb.add_callback(log_pos_callback)
-        logconf.start()
-
-        lg_stab = LogConfig(name='Stabilizer', period_in_ms=100)
-        lg_stab.add_variable('stabilizer.roll', 'float')
-        lg_stab.add_variable('stabilizer.pitch', 'float')
-        lg_stab.add_variable('stabilizer.yaw', 'float')
-        scf.cf.log.add_config(lg_stab)
-        lg_stab.data_received_cb.add_callback(log_stab_callback)
-        lg_stab.start()
-
-        lg_motor = LogConfig(name='motor', period_in_ms=100)
-        lg_motor.add_variable('motor.m1', 'uint32_t')
-        lg_motor.add_variable('motor.m2', 'uint32_t')
-        lg_motor.add_variable('motor.m3', 'uint32_t')
-        lg_motor.add_variable('motor.m4', 'uint32_t')
-        scf.cf.log.add_config(lg_motor)
-        lg_motor.data_received_cb.add_callback(log_motor_callback)
-        lg_motor.start()
+        loggers = init_loggers()
+        start_logging(cf, loggers)
 
         with PositionHlCommander(scf, default_height=0.5, controller=PositionHlCommander.CONTROLLER_PID) as pc:
             pc.go_to( x=0.0, y=0.0, velocity=0.3)
@@ -87,5 +115,5 @@ if __name__ == '__main__':
             pc.go_to( x=0.0, y=0.0, velocity=0.3)
             pc.land()
 
-    csvfile.close()
-    csvfile1.close()
+        stop_logging(loggers)
+    
