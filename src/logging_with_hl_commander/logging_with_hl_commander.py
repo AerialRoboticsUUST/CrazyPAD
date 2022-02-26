@@ -9,8 +9,6 @@ import time
 
 import csv
 
-import matplotlib.pyplot as plt
-
 import cflib.crtp
 from cflib.crazyflie import Crazyflie
 from cflib.crazyflie.syncCrazyflie import SyncCrazyflie
@@ -19,7 +17,7 @@ from cflib.positioning.position_hl_commander import PositionHlCommander
 from cflib.utils import uri_helper
 
 # URI to the Crazyflie to connect to
-uri = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E7E7')
+uri = uri_helper.uri_from_env(default='radio://0/80/2M/E7E7E7E7E8')
 
 logging.basicConfig(level=logging.ERROR)
 
@@ -37,26 +35,27 @@ class FileLogger(object):
         fieldnames = ['timestamp']
         for logVar in logVariables:
             self._logConf.add_variable(logVar.name, logVar.type)
-            fieldnames.append(logVar.Name)
+            fieldnames.append(logVar.name)
 
         
         self._csvfile = open(fileName, 'w')
-        self._data_writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        self._data_writer = csv.DictWriter(self._csvfile, fieldnames=fieldnames)
         self._data_writer.writeheader()
+            
+        self._logConf.data_received_cb.add_callback(self._log_callback)
 
-        def log_callback(timestamp, data):
+    def _log_callback(self, timestamp, data, logconf):
             data['timestamp']=timestamp
             self._data_writer.writerow(data)
             print(data)
-            
-        self._logConf.data_received_cb.add_callback(log_callback)
-
+    
     def start(self, crazyflie):
         crazyflie.log.add_config(self._logConf)
         self._logConf.start()
 
     def stop(self):
         self._logConf.stop()
+        self._logConf.data_received_cb.remove_callback(self._log_callback)
         self._csvfile.close()    
 
 def init_loggers():
@@ -97,7 +96,7 @@ def stop_logging(loggers):
     for logger in loggers:
         logger.stop() 
 
-if __name__ == '__main__'
+if __name__ == '__main__':
     cflib.crtp.init_drivers()
 
     cf = Crazyflie(rw_cache='./cache')
@@ -115,5 +114,6 @@ if __name__ == '__main__'
             pc.go_to( x=0.0, y=0.0, velocity=0.3)
             pc.land()
 
+        time.sleep(1)
         stop_logging(loggers)
     
