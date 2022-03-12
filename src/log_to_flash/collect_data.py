@@ -14,7 +14,7 @@ from cflib.crazyflie.syncLogger import SyncLogger
 from cflib.utils.power_switch import PowerSwitch
 from cflib.positioning.position_hl_commander import PositionHlCommander
 
-URI = 'radio://0/80/2M/E7E7E7E7E9'
+URI = 'radio://0/80/2M/E7E7E7E7E7'
 INTENSITY = 100
 usdCanLog = 1
 deckFlow2 = 0
@@ -86,7 +86,7 @@ if __name__ == '__main__':
 
         with PositionHlCommander(scf, default_height=0.5, controller=PositionHlCommander.CONTROLLER_PID) as pc:
             pc.go_to( x=0.0, y=0.0, velocity=0.3)
-            pc.go_to( x=1.5, y=0.0, velocity=0.3)
+            pc.go_to( x=2.0, y=0.0, velocity=0.3)
             pc.land()
             time.sleep(5)
             pc.take_off( height=0.5, velocity=0.3)
