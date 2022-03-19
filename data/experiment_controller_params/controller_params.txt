@@ -1,0 +1,19 @@
+stateEstimate.x  Расчетное положение платформы в глобальной системе отсчета, X [м].
+stateEstimate.y  Расчетное положение платформы в глобальной системе отсчета, Y [м].
+stateEstimate.z  Предполагаемое положение платформы в глобальной системе отсчета, Z [м].
+controller.cmd_thrust  Команда тяги.
+controller.cmd_roll  Команда вращения.
+controller.cmd_pitch Команда шага.
+controller.cmd_yaw  команда рыскания
+controller.r_roll Измерение крена гироскопа в радианах.
+controller.r_pitch  Измерение шага гироскопа в радианах.
+controller.r_yaw  Измерение рысканья в радианах.
+controller.accelz  Ускорение по оси z в G-force.
+controller.actuatorThrust  Команда тяги без компенсации (наклона).
+controller.roll  Желаемая уставка вращения.
+controller.pitch  Желаемая уставка шага.
+controller.yaw  Желаемая уставка рыскания.
+controller.rollRate  Требуемая уставка скорости вращения.
+controller.pitchRate  Желаемая уставка скорости тангажа.
+controller.yawRate  Требуемая уставка скорости рыскания.
+controller.ctr_yaw Что-то с рысканьем
