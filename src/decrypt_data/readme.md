@@ -54,4 +54,4 @@
  
 Пример запуска скрипта:
     
-    python3 ./src/decrypt_data/decrypt_controller_data.py "./data/controller_data/add_weght_W1_near_M3_M4/E8_log00"
+    python3 ./src/decrypt_data/decrypt_controller_data.py "./data/controller_data/add_weight_W1_near_M3_M4/E8_log00"
