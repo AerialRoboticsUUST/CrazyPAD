@@ -1,0 +1,31 @@
+1     # version
+2048  # buffer size in bytes
+E8_log   # file name
+0     # enable on startup (0/1)
+on:fixedFrequency
+100   # frequency
+1     # mode (0: disabled, 1: synchronous stabilizer, 2: asynchronous)
+motor.m1
+motor.m2
+motor.m3
+motor.m4
+pwm.m1_pwm
+pwm.m2_pwm
+pwm.m3_pwm
+pwm.m4_pwm
+pm.vbatMV
+stateEstimate.x
+stateEstimate.y
+stateEstimate.z
+stateEstimate.vx
+stateEstimate.vy
+stateEstimate.vz
+stateEstimate.ax
+stateEstimate.ay
+stateEstimate.az
+stateEstimate.roll
+stateEstimate.yaw
+on:activeMarkerModeChanged
+on:lhAngle
+on:lhCrossingBeam
+on:lhUartFrame
