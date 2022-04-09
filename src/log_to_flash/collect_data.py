@@ -14,7 +14,7 @@ from cflib.crazyflie.syncLogger import SyncLogger
 from cflib.utils.power_switch import PowerSwitch
 from cflib.positioning.position_hl_commander import PositionHlCommander
 
-URI = 'radio://0/80/2M/E7E7E7E7E7'
+URI = 'radio://0/80/2M/E7E7E7E7E8'
 INTENSITY = 100
 usdCanLog = 1
 deckFlow2 = 0
