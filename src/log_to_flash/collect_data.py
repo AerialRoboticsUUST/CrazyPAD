@@ -25,7 +25,6 @@ deckFlow2 = 0
 def consoleReceived(data):
     print(data, end='')
 
-
 def paramReceived(name, value):
     global usdCanLog
     global deckFlow2
