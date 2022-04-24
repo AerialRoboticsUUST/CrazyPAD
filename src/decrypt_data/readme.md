@@ -13,9 +13,9 @@
 - stateEstimate.z  Расчетное положение платформы в глобальной системе отсчета, Z [м].
 - controller.cmd_roll  Команда крена.
 - controller.cmd_pitch Команда тангажа.
-- controller.cmd_yaw  Команда рыскания
-- controller.r_roll Измерение крена гироскопа в радианах.
-- controller.r_pitch  Измерение тангажа гироскопа в радианах.
+- controller.cmd_yaw  Команда рыскания.
+- controller.r_roll Измерение крена гироскопом в радианах.
+- controller.r_pitch  Измерение тангажа гироскопом в радианах.
 - controller.r_yaw  Измерение рысканья в радианах.
 - controller.accelz  Ускорение по оси z в G-force.
 - controller.actuatorThrust  Команда тяги без компенсации (наклона).
@@ -23,7 +23,7 @@
 - controller.pitch  Желаемое заданное значение тангажа.
 - controller.yaw  Желаемое заданное значение рыскания.
 - controller.rollRate  Желаемое заданное значение скорости крена.
-- controller.pitchRate  Желаемое заданное значение тангажа.
+- controller.pitchRate  Желаемое заданное значение скорости тангажа.
 - controller.yawRate  Желаемое заданное значение скорости рыскания.
 - controller.ctr_yaw Что-то с рысканьем.
 
