@@ -22,9 +22,13 @@ def write_data(file_name):
         wr.writerows(export_data)
 
 def receive_path_file(file):
+    # path to binary file
+
     return os.path.join(root, file)
 
 def fix_time(dict_log_Data):
+    # edit timestamp, timestamp starts from 0
+    
     x = dict_log_Data["timestamp"]
     first_value = x[0]
     for n in range(0, len(x)):
