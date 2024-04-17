@@ -1,4 +1,4 @@
-# crazyflie-dataset
+# CrazyPAD (Crazyflie Propeller Anomaly Data): A dataset for assessing the impact of structural defects on quadcopter performance
 
 ## Software solutions are located in the src directory
 1. Flight program
