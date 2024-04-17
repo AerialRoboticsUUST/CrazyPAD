@@ -1,4 +1,12 @@
-# CrazyPAD (Crazyflie Propeller Anomaly Data): A dataset for assessing the impact of structural defects on quadcopter performance
+# CrazyPAD (Crazyflie <ins>P</ins>ropeller <ins>A</ins>nomaly <ins>D</ins>ata): A dataset for assessing the impact of structural defects on quadcopter performance
+
+<div align="center">
+  
+| <figure><img src="https://github.com/AerialRoboticsUUST/CrazyPAD/assets/81864311/93cfa246-ea9e-4638-8f7b-c577611a7b16" width="300" alt="Crazyflie"> </figure> | 
+|:--:| 
+| *Crazyflie 2.1* |
+  
+</div>
 
 ## Software solutions are located in the src directory
 1. Flight program
