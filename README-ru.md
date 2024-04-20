@@ -1,4 +1,4 @@
-# crazyflie-dataset
+# CrazyPAD (Crazyflie <ins>P</ins>ropeller <ins>A</ins>nomaly <ins>D</ins>ata)
 
 ## Программные решения расположены в каталоге src
 1. Программа полета
