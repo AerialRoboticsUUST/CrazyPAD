@@ -1,4 +1,4 @@
-# CrazyPAD (Crazyflie <ins>P</ins>ropeller <ins>A</ins>nomaly <ins>D</ins>ata): A dataset for assessing the impact of structural defects on quadcopter performance
+# CrazyPAD (Crazyflie <ins>P</ins>ropeller <ins>A</ins>nomaly <ins>D</ins>ata): A dataset for assessing the impact of structural defects on nano-quadcopter performance
 
 <div align="center">
   
