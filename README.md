@@ -10,7 +10,7 @@
 
 ## Data Descriptor Article
 >[!NOTE]
->Please, cite our research paper with a detailed description of this dataset
+>Please, cite our research paper with a detailed description of this dataset:
 >
 >**Masalimov, K.; Muslimov, T.; Kozlov, E.; Munasypov, R.** *CrazyPAD: A Dataset for Assessing the Impact of Structural Defects on Nano-Quadcopter Performance.* Data 2024, 9, 79. https://doi.org/10.3390/data9060079
 
